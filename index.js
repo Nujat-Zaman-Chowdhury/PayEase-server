@@ -93,12 +93,28 @@ async function run() {
       }
 
       const token = createToken(foundUser);
-      res.json({ message: 'Login successful', token });
+      res.json({ message: 'Login successful', token,foundUser });
     });
 
     app.get('/all-users',async(req,res)=>{
       const result = await userCollection.find().toArray();
       res.send(result)
+    })
+
+    //get user by email
+    app.get('/user/:email',async(req,res)=>{
+      const email = req.params.email;
+      const query = {email: email}
+      try{
+        const user = await userCollection.findOne(query)
+        if(!user){
+          return res.status(404).json({ message: 'User not found' })
+        }
+        res.json(user);
+      }
+      catch(err){
+        return res.status(500).json({ message: err.message })
+      }
     })
 
 
